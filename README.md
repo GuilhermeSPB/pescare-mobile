@@ -23,17 +23,32 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Estrutura de pastas
 
-When you're ready, run:
+Mesma arquitetura por features do `pescare-frontend`, adaptada ao Expo Router. As regras completas estão no [CLAUDE.md](CLAUDE.md).
 
-```bash
-npm run reset-project
+```
+src/
+  app/          # SÓ rotas (Expo Router) + _layout.tsx; cada rota renderiza a tela da feature
+  features/
+    [feature]/  # api/, components/, hooks/, screens/, stores/, types/, utils/
+  components/   # componentes compartilhados (2+ features)
+  hooks/        # hooks compartilhados
+  lib/          # api-client, react-query, auth-token
+  stores/       # stores globais (Zustand)
+  theme/        # tema do styled-components
+  types/        # tipos compartilhados
+  utils/        # funções puras compartilhadas
+  config/       # env (EXPO_PUBLIC_*)
+assets/         # imagens e fontes
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- As pastas são criadas quando o primeiro arquivo delas surgir.
+- Uma feature nunca importa de outra; a composição acontece no arquivo de rota em `src/app/`.
+- Arquivos e pastas em kebab-case, inclusive componentes e rotas (`fishing-ban-card.tsx` exporta `FishingBanCard`).
+- Imports com o alias `@/` (ex.: `@/theme/theme`).
 
 ### Other setup steps
 

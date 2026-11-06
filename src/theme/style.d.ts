@@ -1,11 +1,8 @@
-import 'styled-components/native';
+import 'styled-components/native'
+
+import type { AppTheme } from './theme'
 
 declare module 'styled-components/native' {
-  export interface DefaultTheme {
-    colors: {
-      primary: string;
-      background: string;
-      text: string;
-    };
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  export interface DefaultTheme extends AppTheme {}
 }

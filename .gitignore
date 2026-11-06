@@ -41,3 +41,13 @@ example
 # generated native folders
 /ios
 /android
+
+# impeccable engine binary (downloaded per OS on first run)
+.claude/skills/impeccable/scripts/bin/
+
+# impeccable: esboços e capturas de revisão (locais)
+.impeccable/mocks/
+.impeccable/review/
+
+.claude
+.impeccable
