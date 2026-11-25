@@ -1,0 +1,6 @@
+# Arquivos gerados ou de ferramentas de terceiros: formatar só geraria diff sem valor.
+# O que já está no .gitignore (node_modules, .expo, expo-env.d.ts...) o Prettier ignora sozinho.
+package-lock.json
+assets/
+.claude/
+.impeccable/
