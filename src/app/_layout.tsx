@@ -54,6 +54,7 @@ function RootNavigator() {
       <Stack.Protected guard={!!session}>
         <Stack.Screen name="(drawer)" />
         <Stack.Screen name="fishing-records" />
+        <Stack.Screen name="account" />
       </Stack.Protected>
     </Stack>
   )

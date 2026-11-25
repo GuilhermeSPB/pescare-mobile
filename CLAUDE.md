@@ -36,11 +36,11 @@ Expo-specific rules (check the versioned docs before touching an Expo API, `npx 
 - Routing: Expo Router (file-based, `src/app/`), with typed routes (`experiments.typedRoutes`). Import `Link`, `router`, `Stack`, `Tabs` and `useLocalSearchParams` from `expo-router`. Do not install `@react-navigation/*`: Expo Router 57 bundles its own copy.
 - Styling: styled-components 6 (`styled-components/native`), with the theme in `src/theme/theme.ts` and its typing in `src/theme/style.d.ts` (`DefaultTheme`). Colors, spacing and font sizes come from the theme, never as literals in components. A new token goes in both files.
 - Images: `expo-image` (`Image`), not React Native's `Image`.
-- Server state: TanStack Query 5. **Not installed yet.** Add it with `npx expo install @tanstack/react-query` when the first API call appears.
-- HTTP: axios, through a single instance in `src/lib/api-client.ts`. **Not installed yet.** Add it together with TanStack Query.
-- Client state: Zustand. **Not installed yet.** Add it when the first global client state appears. Do not use Context for global state, and never copy server data into a store, because that belongs to TanStack Query.
-- Forms: react-hook-form + zod 3 (`@hookform/resolvers/zod`), the same as the web. **Not installed yet.** The backend uses zod 4, so schemas are not shared: redefine them here.
-- Session token: `expo-secure-store`. **Not installed yet.** See "Current state".
+- Server state: TanStack Query 5, with the single `queryClient` in `src/lib/react-query.ts` (refetch on app focus via `AppState`, online state via NetInfo).
+- HTTP: axios, through a single instance in `src/lib/api-client.ts`.
+- Client state: Zustand. **Not installed yet.** Add it when the first global client state appears. Do not use Context for global state, and never copy server data into a store, because that belongs to TanStack Query. Today three places use React Context anyway (see "Current state").
+- Forms: react-hook-form + zod 3 (`@hookform/resolvers/zod`), the same as the web. **Not installed yet.** The backend uses zod 4, so schemas are not shared: redefine them here. Today the forms use `useState` plus validators in `utils/` (e.g. `features/fishing-records/utils/validate-fishing-record.ts`).
+- Session token: `expo-secure-store`. See "Current state".
 - Add any dependency with `npx expo install <package>`, never `npm i`, so the version matches the SDK.
 - Backend contract (`../pescare-backend`): Express, routes under `/api/v1`, JWT auth (`POST /auth/sign-in` → `{ token, user }`, sent as `Authorization: Bearer <token>`, expires in 1 day), roles `ADMIN` | `FISHER`. Errors come as `{ message, issues?: { path, message }[] }`; show `message` to the user. Fields are snake_case (`main_name`, `is_active`, `fk_municipality_ibge_code`). Keep them as-is in API types and do not rename them.
 
@@ -51,11 +51,13 @@ Feature-based architecture (Bulletproof React), the same as the web. Path aliase
 ```
 src/
   app/             # Expo Router: every file is a route, every _layout.tsx is a navigator
-    _layout.tsx    # root Stack + global providers (ThemeProvider; QueryClientProvider when added)
-    index.tsx      # splash → /home
-    home.tsx
-    (auth)/        # sign-in and sign-up, when created
-    (tabs)/        # signed-in area, when created
+    _layout.tsx    # root Stack + providers (Theme, QueryClient, Auth) + Stack.Protected guards
+    index.tsx      # welcome screen (signed out)
+    sign-in.tsx
+    sign-up/       # sign-up, one field per step
+    (drawer)/      # signed-in area with the side menu (Início, Histórico, Minha produção, REAP, ...)
+    fishing-records/ # new record flow (new/) and record detail ([recordId].tsx)
+    account/       # profile edits opened from Perfil (name, city, password)
   features/
     [feature]/     # auth, alerts, fishing-bans, fishing-records, sales, profile, ...
       api/         # one file per endpoint: request fn + queryOptions + hook
@@ -105,7 +107,7 @@ Only create the folders and subfolders that are actually needed.
 
 ### API files
 
-One file per endpoint, named by action: `get-fishing-bans-in-effect.ts`, `get-alert-preferences.ts`, `update-alert-preferences.ts`. Each file contains:
+One file per endpoint, named by action: `get-fishing-bans-in-effect.ts`, `get-alerts.ts`, `get-alert-by-id.ts`. Each file contains:
 
 ```ts
 // features/fishing-bans/api/get-fishing-bans-in-effect.ts
@@ -128,7 +130,7 @@ export const useFishingBansInEffect = () => useQuery(getFishingBansInEffectQuery
 
 - Node + npm. A phone with Expo Go, an Android emulator, or an iOS simulator.
 - Backend running from `../pescare-backend`, the same way as for the web: PostgreSQL with the schema in `../pescareSQL_v1.sql`, then `npm run seed-municipalities` and `npm run dev` (port 3000).
-- `.env` with `EXPO_PUBLIC_API_BASE_URL`, once the API client exists. `localhost` only works on web and the iOS simulator. The Android emulator uses `http://10.0.2.2:3000/api/v1`, and a physical phone uses the computer's LAN IP (`http://192.168.x.x:3000/api/v1`).
+- `.env` is optional. Without `EXPO_PUBLIC_API_URL`, `src/config/env.ts` uses the IP of the machine running `expo start`, on port 3000, which the emulator and a phone on the same network already reach. To point elsewhere, copy `.env.example`. When setting it by hand: `localhost` only works on web and the iOS simulator. The Android emulator uses `http://10.0.2.2:3000/api/v1`, and a physical phone uses the computer's LAN IP (`http://192.168.x.x:3000/api/v1`).
 
 ### Inside pescare-mobile
 
@@ -142,30 +144,6 @@ export const useFishingBansInEffect = () => useQuery(getFishingBansInEffectQuery
 - `npx expo install <package>`: add a dependency at the SDK-compatible version.
 
 Run the type check and lint before declaring any task done.
-
-## Current state
-
-- Built: splash (`src/app/index.tsx`, shows "Pescare" for 2 s, then `router.replace('/home')`) and an empty home (`src/app/home.tsx`). There is no auth, API client or feature yet. These two route files are app-level screens, so they stay in `src/app/`, like the web's home lives in `app/routes/`.
-- Not set up yet: `.env.example`. Create it with the API client.
-- What the API offers the fisher today (routers in `../pescare-backend/src/modules/`):
-  - `POST /auth/sign-up` `{ name, email, password (min 8), fk_municipality_ibge_code (7 digits) }` always creates a `FISHER`, and returns 409 when the e-mail already exists. `POST /auth/sign-in`.
-  - `GET` / `PATCH /users/me`, `PATCH /users/me/password`.
-  - `GET /fishing-ban-periods/in-effect`, `GET /alerts`, `GET` / `PUT /alerts/preferences`.
-  - Catalogs for the forms, read-only: `/species`, `/fishing-methods`, `/fishing-location-types`, `/buyer-types`, and `/municipalities` (public, used by sign-up).
-  - Fishing records and sales (commercialization) have tables in `../pescareSQL_v1.sql` but no API yet. The fishing record status (`EM_ANDAMENTO`, `FINALIZADO`) and the catch unit (`KG`, `UNIDADE`) are still provisional in the schema.
-- Catalog items with `is_active = false` are not offered as options to the fisher. Records already saved keep showing them (team decision, `PRODUCT.md`).
-- Offline use is not a requirement: fishers register trips and sales afterwards, on land and online (team decision, `PRODUCT.md`). Do not add offline sync or a local copy of records.
-- JWT: store it with `expo-secure-store` in `src/lib/auth-token.ts`, not in AsyncStorage. Two caveats:
-  - SecureStore keys only accept letters, digits, `.`, `-` and `_`, so use `pescare.token`, not the web's `pescare-admin:token`.
-  - SecureStore has no web implementation, so the web preview cannot keep a session.
-- Session handling follows the web:
-  - The signed-in user comes from `GET /users/me` (server state). Do not persist the `user` from sign-in.
-  - On a `401` (except on sign-in itself), clear the token and send the user to sign-in with `router.replace`.
-  - Deactivated users get a `401` on the next request, because the backend checks `is_active` on every request.
-- Dates travel as strings: validity dates are `"AAAA-MM-DD"`, and the recurring defeso window is `"MM-DD"`, which can cross the new year. Never parse them with `new Date('AAAA-MM-DD')`, which reads them as UTC and shows the previous day in UTC−3. Mirror the web's `utils/iso-date.ts` helpers.
-- CORS only applies to the web preview. To test it against the API, add `http://localhost:8081` to `CORS_ORIGINS` in `../pescare-backend/.env`. Native apps are not affected.
-- UI copy: the web's "no explanatory text" rule was decided for the admin panel and does not apply here. Fishers have little digital familiarity and limited reading (`PRODUCT.md`). Use short, plain pt-BR words they already use, one thing asked per step. Never show codes or system jargon: IBGE codes, enum values like `EM_ANDAMENTO`, or the word "status".
-- Visual direction: not set yet (`PRODUCT.md`, "Brand Commitments"), and there is no `DESIGN.md`. The theme has `primary` `#2E7D32`, `background` `#FFFFFF` and `text` `#212121`. The admin panel's `DESIGN.md` does not carry over automatically.
 
 ## Code style
 

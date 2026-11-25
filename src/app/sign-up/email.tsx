@@ -21,7 +21,9 @@ export default function EmailStep() {
     }
 
     if (!isValidEmail(email)) {
-      setLocalError('Esse e-mail parece incompleto. Ele precisa ter @ e ponto, como maria@gmail.com.')
+      setLocalError(
+        'Esse e-mail parece incompleto. Ele precisa ter @ e ponto, como maria@gmail.com.',
+      )
       return
     }
 
@@ -42,7 +44,9 @@ export default function EmailStep() {
             <Button
               variant="text"
               label="Entrar com este e-mail"
-              onPress={() => router.replace({ pathname: '/sign-in', params: { email: data.email.trim() } })}
+              onPress={() =>
+                router.replace({ pathname: '/sign-in', params: { email: data.email.trim() } })
+              }
             />
           )}
         </>

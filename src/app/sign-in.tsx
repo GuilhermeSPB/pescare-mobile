@@ -5,7 +5,7 @@ import type { TextInput } from 'react-native'
 import { Button } from '@/components/Button'
 import { FormMessage } from '@/components/FormMessage'
 import { FormScreen } from '@/components/FormScreen'
-import { IconButton } from '@/components/IconButton'
+import { PasswordField } from '@/components/password-field'
 import { TextField } from '@/components/TextField'
 import { useAuth } from '@/contexts/AuthContext'
 import { ApiError } from '@/lib/api-client'
@@ -23,7 +23,6 @@ export default function SignInScreen() {
   const params = useLocalSearchParams<{ email?: string; created?: string }>()
   const [email, setEmail] = useState(params.email ?? '')
   const [password, setPassword] = useState('')
-  const [visible, setVisible] = useState(false)
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const [formError, setFormError] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
@@ -65,12 +64,18 @@ export default function SignInScreen() {
       footer={
         <>
           <Button label="Entrar" onPress={submit} loading={submitting} />
-          <Button variant="text" label="Ainda não tenho conta" onPress={() => router.replace('/sign-up')} />
+          <Button
+            variant="text"
+            label="Ainda não tenho conta"
+            onPress={() => router.replace('/sign-up')}
+          />
         </>
       }
     >
       {params.created === '1' && (
-        <FormMessage tone="success">Sua conta foi criada. Agora entre com seu e-mail e senha.</FormMessage>
+        <FormMessage tone="success">
+          Sua conta foi criada. Agora entre com seu e-mail e senha.
+        </FormMessage>
       )}
       <TextField
         label="E-mail"
@@ -90,7 +95,7 @@ export default function SignInScreen() {
         submitBehavior="submit"
         onSubmitEditing={() => passwordRef.current?.focus()}
       />
-      <TextField
+      <PasswordField
         ref={passwordRef}
         label="Senha"
         value={password}
@@ -100,20 +105,10 @@ export default function SignInScreen() {
         }}
         error={errors.password}
         autoFocus={!!params.email}
-        secureTextEntry={!visible}
-        autoCapitalize="none"
-        autoCorrect={false}
         autoComplete="current-password"
         textContentType="password"
         returnKeyType="done"
         onSubmitEditing={submit}
-        trailing={
-          <IconButton
-            icon={visible ? 'visibilityOff' : 'visibility'}
-            accessibilityLabel={visible ? 'Esconder senha' : 'Mostrar senha'}
-            onPress={() => setVisible((current) => !current)}
-          />
-        }
       />
       {formError && <FormMessage tone="error">{formError}</FormMessage>}
     </FormScreen>

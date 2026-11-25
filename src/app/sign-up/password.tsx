@@ -4,13 +4,11 @@ import { useState } from 'react'
 import { Button } from '@/components/Button'
 import { FormMessage } from '@/components/FormMessage'
 import { FormScreen } from '@/components/FormScreen'
-import { IconButton } from '@/components/IconButton'
-import { TextField } from '@/components/TextField'
+import { PasswordField } from '@/components/password-field'
 import { AccountCreatedError, useAuth } from '@/contexts/AuthContext'
 import { EMAIL_TAKEN, useSignUp, type SignUpField } from '@/contexts/SignUpContext'
 import { ApiError } from '@/lib/api-client'
-
-const MIN_PASSWORD = 8
+import { NEW_PASSWORD_HELPER, shortPasswordMessage } from '@/utils/password'
 
 const STEP_ROUTES = {
   name: '/sign-up',
@@ -43,23 +41,18 @@ export default function PasswordStep() {
   const { signUp } = useAuth()
   const { data, setError } = useSignUp()
   const [password, setPassword] = useState('')
-  const [visible, setVisible] = useState(false)
   const [error, setLocalError] = useState<string>()
   const [formError, setFormError] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
-
-  const missing = MIN_PASSWORD - password.length
 
   async function submit() {
     // A tecla "concluir" do teclado ainda dispara enquanto o botão mostra o carregando.
     if (submitting) return
 
-    if (missing > 0) {
-      setLocalError(
-        password.length === 0
-          ? 'Crie uma senha para continuar.'
-          : `A senha precisa ter pelo menos ${MIN_PASSWORD} letras ou números. ${missing === 1 ? 'Falta 1' : `Faltam ${missing}`}.`,
-      )
+    const shortMessage = shortPasswordMessage(password)
+
+    if (shortMessage) {
+      setLocalError(password.length === 0 ? 'Crie uma senha para continuar.' : shortMessage)
       return
     }
 
@@ -113,7 +106,7 @@ export default function PasswordStep() {
       example="Você vai usar esta senha junto com o e-mail para entrar."
       footer={<Button label="Criar conta" onPress={submit} loading={submitting} />}
     >
-      <TextField
+      <PasswordField
         label="Senha"
         value={password}
         onChangeText={(text) => {
@@ -121,22 +114,12 @@ export default function PasswordStep() {
           setLocalError(undefined)
         }}
         error={error}
-        helper={`Use pelo menos ${MIN_PASSWORD} letras ou números.`}
-        secureTextEntry={!visible}
+        helper={NEW_PASSWORD_HELPER}
         autoFocus
-        autoCapitalize="none"
-        autoCorrect={false}
         autoComplete="new-password"
         textContentType="newPassword"
         returnKeyType="done"
         onSubmitEditing={submit}
-        trailing={
-          <IconButton
-            icon={visible ? 'visibilityOff' : 'visibility'}
-            accessibilityLabel={visible ? 'Esconder senha' : 'Mostrar senha'}
-            onPress={() => setVisible((current) => !current)}
-          />
-        }
       />
       {formError && <FormMessage tone="error">{formError}</FormMessage>}
     </FormScreen>

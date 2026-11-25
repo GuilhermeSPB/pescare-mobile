@@ -15,6 +15,7 @@ const ICONS = {
   remove: { ios: 'minus.circle', android: 'remove_circle_outline', web: 'remove_circle_outline' },
   calendar: { ios: 'calendar', android: 'calendar_today', web: 'calendar_today' },
   chevronDown: { ios: 'chevron.down', android: 'expand_more', web: 'expand_more' },
+  chevronUp: { ios: 'chevron.up', android: 'expand_less', web: 'expand_less' },
   chevronLeft: { ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
   person: { ios: 'person.fill', android: 'person', web: 'person' },
@@ -25,6 +26,10 @@ const ICONS = {
   fishingBan: { ios: 'nosign', android: 'block', web: 'block' },
   // Item REAP do menu: uma folha de relatório.
   report: { ios: 'doc.text', android: 'description', web: 'description' },
+  // Item Minha produção do menu: um gráfico de barras.
+  chart: { ios: 'chart.bar.fill', android: 'bar_chart', web: 'bar_chart' },
+  // Item Comunicados do menu: o megafone de aviso.
+  alerts: { ios: 'megaphone', android: 'campaign', web: 'campaign' },
 } satisfies Record<string, SymbolViewProps['name']>
 
 export type IconName = keyof typeof ICONS

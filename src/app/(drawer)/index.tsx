@@ -24,6 +24,7 @@ export default function HomeRoute() {
 
   return (
     <HomeScreen
+      fisherName={meQuery.data?.name}
       monthLabel={formatMonthLabel(today)}
       stats={records && summarizeMonth(records, monthPrefix(today))}
       recent={records?.slice(0, RECENT_LIMIT).map(toFishingRecordRowData)}

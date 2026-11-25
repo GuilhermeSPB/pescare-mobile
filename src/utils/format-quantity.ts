@@ -1,3 +1,5 @@
+import { groupThousands } from '@/utils/group-thousands'
+
 // Unidades de captura como a API grava: "KG" ou "UNIDADE" (valores provisórios do schema).
 export type QuantityUnit = 'KG' | 'UNIDADE'
 
@@ -19,7 +21,7 @@ export function formatQuantity(value: number, unit: QuantityUnit): string {
 // sem zeros à direita.
 function formatAmount(value: number): string {
   const [integerPart, decimalPart = ''] = value.toFixed(3).split('.')
-  const grouped = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  const grouped = groupThousands(integerPart)
   const decimals = decimalPart.replace(/0+$/, '')
 
   return decimals ? `${grouped},${decimals}` : grouped

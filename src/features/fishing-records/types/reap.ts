@@ -1,14 +1,11 @@
 import type { Municipality } from '@/types/municipality'
+import type { SummaryPeriod } from '@/types/summary-period'
 
 import type { FishingLocationType, NamedCatalogItem, Species } from './catalogs'
 import type { CatchUnit } from './fishing-record'
 
-// Período do resumo: um mês (1 a 12) ou o ano inteiro. O REAP é anual, mas os dados são os
-// mesmos mês a mês.
-export type ReapPeriod =
-  { kind: 'MONTH'; year: number; month: number } | { kind: 'YEAR'; year: number }
-
-export type ReapPeriodKind = ReapPeriod['kind']
+// O período do resumo é o `SummaryPeriod` compartilhado (@/types/summary-period): o REAP é anual,
+// mas os dados são os mesmos mês a mês.
 
 // Dias com pesca terminada num mês (1 a 12). Mês sem pesca entra com 0, como o REAP pede.
 export type ReapWorkedMonth = {
@@ -52,6 +49,12 @@ export type ReapSummary = {
   unfinishedCount: number
 }
 
+// No REAP anual, o resumo de cada mês (1 a 12), mostrado mês a mês como na escolha "Por mês".
+export type ReapMonthSummary = {
+  month: number
+  summary: ReapSummary
+}
+
 // Catálogos que trocam os ids do resumo por nomes. Cada um pode ainda não ter chegado.
 export type ReapCatalogs = {
   locationTypes: FishingLocationType[] | undefined
@@ -59,4 +62,18 @@ export type ReapCatalogs = {
   municipalities: Municipality[] | undefined
   species: Species[] | undefined
   targetGroups: NamedCatalogItem[] | undefined
+}
+
+// O que vai no PDF do REAP: quem é o pescador (nome e cidade, decisão do time de 2026-11-04) e o
+// mesmo resumo da tela. CPF e RGP não existem no sistema e ficam de fora.
+export type ReapPdfContent = {
+  fisherName: string
+  // Cidade do cadastro já em texto: "Belmonte (Bahia)".
+  cityLabel: string
+  period: SummaryPeriod
+  summary: ReapSummary
+  // Os meses do ano, como na tela. Vazio quando o período é um mês.
+  monthSummaries: ReapMonthSummary[]
+  catalogs: ReapCatalogs
+  generatedOn: Date
 }

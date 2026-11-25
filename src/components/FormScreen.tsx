@@ -96,7 +96,14 @@ const Footer = styled.View<{ $edge: boolean }>`
 
 // Esqueleto das telas de formulário: uma pergunta por tela, com o botão principal
 // sempre visível acima do teclado.
-export function FormScreen({ appBarTitle, headline, example, progress, children, footer }: FormScreenProps) {
+export function FormScreen({
+  appBarTitle,
+  headline,
+  example,
+  progress,
+  children,
+  footer,
+}: FormScreenProps) {
   const insets = useSafeAreaInsets()
   const { space } = useTheme()
   const keyboardVisible = useKeyboardVisible()
@@ -110,7 +117,9 @@ export function FormScreen({ appBarTitle, headline, example, progress, children,
     const top = offset > 0
     const bottom = offset + viewport < content - 1
 
-    setEdges((current) => (current.top === top && current.bottom === bottom ? current : { top, bottom }))
+    setEdges((current) =>
+      current.top === top && current.bottom === bottom ? current : { top, bottom },
+    )
   }
 
   return (
@@ -124,7 +133,11 @@ export function FormScreen({ appBarTitle, headline, example, progress, children,
           onScroll={(event) => updateEdges({ offset: event.nativeEvent.contentOffset.y })}
           onLayout={(event) => updateEdges({ viewport: event.nativeEvent.layout.height })}
           onContentSizeChange={(_width, height) => updateEdges({ content: height })}
-          contentContainerStyle={{ paddingHorizontal: space.lg, paddingTop: space.sm, paddingBottom: space.xl }}
+          contentContainerStyle={{
+            paddingHorizontal: space.lg,
+            paddingTop: space.sm,
+            paddingBottom: space.xl,
+          }}
         >
           {progress && (
             <ProgressRow>
@@ -145,7 +158,10 @@ export function FormScreen({ appBarTitle, headline, example, progress, children,
           <Body>{children}</Body>
         </ScrollView>
         {/* Com o teclado aberto, a barra de gestos fica atrás dele: sem a folga do inset. */}
-        <Footer $edge={edges.bottom} style={{ paddingBottom: (keyboardVisible ? 0 : insets.bottom) + space.lg }}>
+        <Footer
+          $edge={edges.bottom}
+          style={{ paddingBottom: (keyboardVisible ? 0 : insets.bottom) + space.lg }}
+        >
           {footer}
         </Footer>
       </KeyboardAvoidingView>

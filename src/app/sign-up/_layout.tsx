@@ -7,7 +7,12 @@ import { theme } from '@/theme/theme'
 export default function SignUpLayout() {
   return (
     <SignUpProvider>
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.colors.surface } }} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: theme.colors.surface },
+        }}
+      />
     </SignUpProvider>
   )
 }

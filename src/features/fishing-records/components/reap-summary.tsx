@@ -1,9 +1,7 @@
-import styled from 'styled-components/native'
-
-import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 
-import type { ReapCatalogs, ReapSummary } from '../types/reap'
+import type { ReapCatalogs, ReapMonthSummary, ReapSummary } from '../types/reap'
+import { describeNoFinishedFishing } from '../utils/reap-texts'
 import {
   toReapAreaRows,
   toReapCatchRows,
@@ -18,51 +16,23 @@ import {
   ReapTargetGroupsCard,
   ReapWorkedDaysCard,
 } from './reap-cards'
-import { RecordNote } from './record-text'
+import { ReapYearMonths } from './reap-year-months'
 
-type ReapSummaryViewProps = {
+type ReapMonthSummaryViewProps = {
   summary: ReapSummary
-  isYear: boolean
   catalogs: ReapCatalogs
-  onOpenHistory: () => void
 }
 
-const Notice = styled.View`
-  gap: ${({ theme }) => theme.space.xs}px;
-  align-items: flex-start;
-`
-
-function unfinishedMessage(count: number): string {
-  if (count === 1) return '1 pesca deste período está sem terminar e não entra aqui.'
-
-  return `${count} pescas deste período estão sem terminar e não entram aqui.`
-}
-
-// Os cartões do REAP na ordem do formulário do PesqBrasil. Sem pesca terminada, a resposta é
-// só "Não pescou": os outros campos não se aplicam.
-export function ReapSummaryView({
-  summary,
-  isYear,
-  catalogs,
-  onOpenHistory,
-}: ReapSummaryViewProps) {
+// Um mês: os cartões do REAP na ordem do formulário do PesqBrasil. Sem pesca terminada, a
+// resposta é só "Não pescou": os outros campos não se aplicam.
+export function ReapMonthSummaryView({ summary, catalogs }: ReapMonthSummaryViewProps) {
   return (
     <>
-      {summary.unfinishedCount > 0 && (
-        <Notice>
-          <RecordNote>{unfinishedMessage(summary.unfinishedCount)}</RecordNote>
-          <Button variant="text" label="Ver no histórico" onPress={onOpenHistory} />
-        </Notice>
-      )}
       <ReapFishedCard hasFished={summary.hasFished} />
-      {!summary.hasFished && <EmptyState message="Nenhuma pesca terminada neste período." />}
+      {!summary.hasFished && <EmptyState message={describeNoFinishedFishing('MONTH')} />}
       {summary.hasFished && (
         <>
-          <ReapWorkedDaysCard
-            workedMonths={summary.workedMonths}
-            workedDays={summary.workedDays}
-            isYear={isYear}
-          />
+          <ReapWorkedDaysCard workedDays={summary.workedDays} />
           <ReapAreasCard rows={toReapAreaRows(summary.areas, catalogs)} />
           <ReapCatchesCard rows={toReapCatchRows(summary.catches)} />
           <ReapTargetGroupsCard names={toTargetGroupNames(summary.speciesIds, catalogs)} />
@@ -71,6 +41,32 @@ export function ReapSummaryView({
             stateNames={toSaleStateNames(summary.saleMunicipalityCodes, catalogs)}
           />
         </>
+      )}
+    </>
+  )
+}
+
+type ReapYearSummaryViewProps = {
+  year: number
+  summary: ReapSummary
+  monthSummaries: ReapMonthSummary[]
+  catalogs: ReapCatalogs
+}
+
+// O ano: a resposta "Pescou?" e, se pescou, a lista de meses que abrem e fecham.
+export function ReapYearSummaryView({
+  year,
+  summary,
+  monthSummaries,
+  catalogs,
+}: ReapYearSummaryViewProps) {
+  return (
+    <>
+      <ReapFishedCard hasFished={summary.hasFished} />
+      {!summary.hasFished && <EmptyState message={describeNoFinishedFishing('YEAR')} />}
+      {summary.hasFished && (
+        // A chave pelo ano fecha os meses abertos quando a pessoa troca de ano.
+        <ReapYearMonths key={year} monthSummaries={monthSummaries} catalogs={catalogs} />
       )}
     </>
   )

@@ -46,6 +46,21 @@ export function toReapAreaRows(areas: ReapArea[], catalogs: ReapCatalogs): ReapA
 }
 
 /**
+ * As linhas de um lugar de pesca abaixo do nome, iguais na tela e no PDF.
+ *
+ * @example
+ * describeReapArea(row) // ["Tipo de local: Rio", "Ambiente: Continental", "Cidade: ...", "Como: Rede"]
+ */
+export function describeReapArea(row: ReapAreaRow): string[] {
+  return [
+    `Tipo de local: ${row.locationLabel}`,
+    `Ambiente: ${row.environmentLabel}`,
+    `Cidade: ${row.cityLabel}`,
+    `Como: ${row.methodLabel}`,
+  ]
+}
+
+/**
  * Quantidade e preço de cada espécie, como o REAP pede: "Preço do quilo: R$ 12,00".
  *
  * @example

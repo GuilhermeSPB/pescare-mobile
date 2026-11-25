@@ -17,7 +17,7 @@ export const createFishingRecord = async (input: CreateFishingRecordInput) => {
 }
 
 /**
- * Mutação de gravar pesca. Ao gravar, as listas de pescas são relidas.
+ * Mutação de gravar pesca. Ao gravar, as listas de pescas e os indicadores são relidos.
  *
  * @example
  * const createMutation = useCreateFishingRecord()
@@ -28,6 +28,12 @@ export const useCreateFishingRecord = () => {
 
   return useMutation({
     mutationFn: createFishingRecord,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['fishing-records'] }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['fishing-records'] }),
+        // Chave da feature production (get-production-indicators.ts), escrita aqui porque as
+        // features não se importam. Sem isso, Minha produção mostra números velhos por até 1 min.
+        queryClient.invalidateQueries({ queryKey: ['production-indicators'] }),
+      ]),
   })
 }

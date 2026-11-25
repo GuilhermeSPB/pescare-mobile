@@ -2,19 +2,18 @@ import styled from 'styled-components/native'
 
 import { FilterChip } from '@/components/filter-chip'
 import { IconButton } from '@/components/IconButton'
+import type { SummaryPeriod, SummaryPeriodKind } from '@/types/summary-period'
+import { formatSummaryPeriod } from '@/utils/summary-period'
 
-import type { ReapPeriod, ReapPeriodKind } from '../types/reap'
-import { formatReapPeriod } from '../utils/reap-period'
-
-type ReapPeriodPickerProps = {
-  period: ReapPeriod
+type SummaryPeriodPickerProps = {
+  period: SummaryPeriod
   canGoNext: boolean
-  onKindChange: (kind: ReapPeriodKind) => void
+  onKindChange: (kind: SummaryPeriodKind) => void
   onPrevious: () => void
   onNext: () => void
 }
 
-const KIND_OPTIONS: { value: ReapPeriodKind; label: string }[] = [
+const KIND_OPTIONS: { value: SummaryPeriodKind; label: string }[] = [
   { value: 'MONTH', label: 'Por mês' },
   { value: 'YEAR', label: 'Por ano' },
 ]
@@ -44,15 +43,15 @@ const PeriodLabel = styled.Text`
   color: ${({ theme }) => theme.colors.onSurface};
 `
 
-// Escolha do período do REAP: mês ou ano, e setas para andar um de cada vez. Setas em vez de
+// Escolha do período de um resumo: mês ou ano, e setas para andar um de cada vez. Setas em vez de
 // calendário: um toque por mês, sem abrir nada.
-export function ReapPeriodPicker({
+export function SummaryPeriodPicker({
   period,
   canGoNext,
   onKindChange,
   onPrevious,
   onNext,
-}: ReapPeriodPickerProps) {
+}: SummaryPeriodPickerProps) {
   const isMonth = period.kind === 'MONTH'
 
   return (
@@ -75,7 +74,7 @@ export function ReapPeriodPicker({
           onPress={onPrevious}
         />
         <PeriodLabel accessibilityRole="header" accessibilityLiveRegion="polite">
-          {formatReapPeriod(period)}
+          {formatSummaryPeriod(period)}
         </PeriodLabel>
         <IconButton
           icon="chevronRight"

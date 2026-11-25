@@ -42,8 +42,9 @@ function validateCatch(item: CatchDraft, speciesIds: number[]): string | undefin
   if (parseDecimal(item.quantity) === null)
     return 'Escreva a quantidade. Use números, como 12 ou 12,5.'
   if (item.sold === null) return 'Diga se você vendeu esta espécie.'
+  // Mesma palavra do rótulo do campo (catch-card.tsx): "quilo" com Quilos, "unidade" com Unidades.
   if (item.sold && parseDecimal(item.unitValue) === null)
-    return 'Escreva o preço de cada unidade vendida, em reais. Use números, como 8 ou 8,50.'
+    return `Escreva o preço de cada ${item.unit === 'KG' ? 'quilo vendido' : 'unidade vendida'}, em reais. Use números, como 8 ou 8,50.`
 
   return undefined
 }

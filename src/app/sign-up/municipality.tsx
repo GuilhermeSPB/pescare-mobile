@@ -85,7 +85,9 @@ function CityRow({ municipality, selected, onPress }: CityRowProps) {
       })}
     >
       <RowContent>
-        <CityName style={selected ? { fontWeight: '600', color: colors.onPrimaryContainer } : undefined}>
+        <CityName
+          style={selected ? { fontWeight: '600', color: colors.onPrimaryContainer } : undefined}
+        >
           {municipality.name}
         </CityName>
         <StateName>{state}</StateName>
@@ -111,7 +113,9 @@ export default function MunicipalityStep() {
       .then((list) => active && setMunicipalities(list))
       .catch((reason) => {
         if (active) {
-          setLoadError(reason instanceof ApiError ? reason.message : 'Não foi possível carregar as cidades.')
+          setLoadError(
+            reason instanceof ApiError ? reason.message : 'Não foi possível carregar as cidades.',
+          )
         }
       })
 
@@ -127,7 +131,9 @@ export default function MunicipalityStep() {
 
   const tooShort = query.trim().length < MIN_QUERY
   const { results, total } =
-    municipalities && !tooShort ? searchMunicipalities(municipalities, query) : { results: [], total: 0 }
+    municipalities && !tooShort
+      ? searchMunicipalities(municipalities, query)
+      : { results: [], total: 0 }
 
   function select(municipality: Municipality) {
     // Fecha o teclado para o botão "Continuar" e a escolha ficarem à vista.

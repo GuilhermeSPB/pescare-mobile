@@ -1,9 +1,10 @@
+import type { SummaryPeriod } from '@/types/summary-period'
+import { summaryPeriodPrefix } from '@/utils/summary-period'
 import { normalize } from '@/utils/text'
 
 import type { CatchUnit, FishingRecord, SpeciesCatch } from '../types/fishing-record'
-import type { ReapArea, ReapCatch, ReapPeriod, ReapSummary, ReapWorkedMonth } from '../types/reap'
+import type { ReapArea, ReapCatch, ReapSummary, ReapWorkedMonth } from '../types/reap'
 import { finishedRecordsIn } from './finished-records-in'
-import { reapPeriodPrefix } from './reap-period'
 
 const ALL_MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
@@ -18,14 +19,15 @@ type CatchTotal = {
 
 /**
  * Monta o que o REAP pede sobre a atividade, a partir das pescas terminadas do período.
- * A pesca sem terminar só entra na contagem `unfinishedCount`, para o aviso.
+ * A pesca sem terminar só entra na contagem `unfinishedCount`, para a frase do mês que só tem
+ * pesca sem terminar (`describeMonthWithoutFishing`).
  *
  * @param records pescas como a API devolve, da mais recente para a mais antiga
  * @example
  * summarizeReap(records, { kind: 'YEAR', year: 2026 }).workedDays // 87
  */
-export function summarizeReap(records: FishingRecord[], period: ReapPeriod): ReapSummary {
-  const datePrefix = reapPeriodPrefix(period)
+export function summarizeReap(records: FishingRecord[], period: SummaryPeriod): ReapSummary {
+  const datePrefix = summaryPeriodPrefix(period)
   const finished = finishedRecordsIn(records, datePrefix)
   const catches = finished.flatMap((record) => record.species)
   const sold = finished.filter((record) => record.commercialization !== null)
@@ -47,11 +49,14 @@ export function summarizeReap(records: FishingRecord[], period: ReapPeriod): Rea
 }
 
 // Dias distintos com pesca em cada mês: os 12 meses no ano (mês sem pesca = 0), um só no mês.
-function countWorkedDaysByMonth(records: FishingRecord[], period: ReapPeriod): ReapWorkedMonth[] {
+function countWorkedDaysByMonth(
+  records: FishingRecord[],
+  period: SummaryPeriod,
+): ReapWorkedMonth[] {
   const months = period.kind === 'YEAR' ? ALL_MONTHS : [period.month]
 
   return months.map((month) => {
-    const monthPrefix = reapPeriodPrefix({ kind: 'MONTH', year: period.year, month })
+    const monthPrefix = summaryPeriodPrefix({ kind: 'MONTH', year: period.year, month })
     const days = records
       .filter((record) => record.fishing_date.startsWith(monthPrefix))
       .map((record) => record.fishing_date)

@@ -4,7 +4,7 @@ import styled, { useTheme } from 'styled-components/native'
 
 import { Icon, type IconName } from './Icon'
 
-type TextFieldProps = Omit<TextInputProps, 'style'> & {
+export type TextFieldProps = Omit<TextInputProps, 'style'> & {
   label: string
   error?: string
   helper?: string

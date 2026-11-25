@@ -15,8 +15,8 @@ import {
   fishingRecordHref,
   HISTORY_HREF,
   NEW_RECORD_HREF,
+  PRODUCTION_HREF,
 } from '@/config/routes'
-import { useAuth } from '@/contexts/AuthContext'
 import { useOpenDrawer } from '@/hooks/use-open-drawer'
 import { firstName } from '@/utils/text'
 
@@ -85,6 +85,9 @@ type FishingBansState = {
 }
 
 type HomeScreenProps = {
+  // Nome completo de GET /users/me; undefined enquanto não chegou. Não vem da sessão do login,
+  // que fica com o nome antigo depois de "Mudar nome".
+  fisherName: string | undefined
   monthLabel: string
   // undefined enquanto as pescas não chegaram.
   stats: MonthStatsInput | undefined
@@ -142,8 +145,14 @@ function FishingBansSection({ bans }: FishingBansSectionProps) {
 }
 
 // Início: o defeso que vale na cidade, o mês do pescador, as últimas pescas e os atalhos.
-export function HomeScreen({ monthLabel, stats, recent, query, fishingBans }: HomeScreenProps) {
-  const { session } = useAuth()
+export function HomeScreen({
+  fisherName,
+  monthLabel,
+  stats,
+  recent,
+  query,
+  fishingBans,
+}: HomeScreenProps) {
   const openDrawer = useOpenDrawer()
 
   return (
@@ -152,7 +161,7 @@ export function HomeScreen({ monthLabel, stats, recent, query, fishingBans }: Ho
       <Content contentContainerStyle={{ flexGrow: 1 }}>
         <Inner>
           <Greeting accessibilityRole="header">
-            Olá, {firstName(session?.user.name ?? '')}!
+            {fisherName ? `Olá, ${firstName(fisherName)}!` : 'Olá!'}
           </Greeting>
           <FishingBansSection bans={fishingBans} />
           <QueryFeedback
@@ -162,6 +171,13 @@ export function HomeScreen({ monthLabel, stats, recent, query, fishingBans }: Ho
             onRetry={query.onRetry}
           />
           {stats && <MonthStats title={monthLabel} cards={formatMonthCards(stats)} />}
+          {stats && (
+            <Button
+              variant="outlined"
+              label="Ver minha produção"
+              onPress={() => router.push(PRODUCTION_HREF)}
+            />
+          )}
           {recent && (
             <RecentFishingsCard
               items={recent}

@@ -13,6 +13,8 @@ type MunicipalityPickerProps = {
   municipalities: Municipality[] | undefined
   selectedCode: string | null
   onSelect: (municipality: Municipality) => void
+  // Mostrado no campo de busca, como em qualquer campo de formulário.
+  error?: string
 }
 
 const MIN_QUERY = 2
@@ -40,6 +42,7 @@ export function MunicipalityPicker({
   municipalities,
   selectedCode,
   onSelect,
+  error,
 }: MunicipalityPickerProps) {
   const { colors, space, size } = useTheme()
   const [query, setQuery] = useState('')
@@ -58,6 +61,7 @@ export function MunicipalityPicker({
         leadingIcon="search"
         value={query}
         onChangeText={setQuery}
+        error={error}
         helper={tooShort ? `Digite pelo menos ${MIN_QUERY} letras do nome.` : undefined}
         autoCorrect={false}
         autoCapitalize="words"

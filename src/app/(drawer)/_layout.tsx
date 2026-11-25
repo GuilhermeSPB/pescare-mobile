@@ -53,6 +53,14 @@ export default function DrawerLayout() {
         }}
       />
       <Drawer.Screen
+        name="production"
+        options={{
+          drawerLabel: 'Minha produção',
+          title: 'Minha produção',
+          drawerIcon: ({ color }) => <Icon name="chart" color={color} />,
+        }}
+      />
+      <Drawer.Screen
         name="reap"
         options={{
           drawerLabel: 'REAP',
@@ -66,6 +74,14 @@ export default function DrawerLayout() {
           drawerLabel: 'Defesos',
           title: 'Defesos',
           drawerIcon: ({ color }) => <Icon name="fishingBan" color={color} />,
+        }}
+      />
+      <Drawer.Screen
+        name="alerts"
+        options={{
+          drawerLabel: 'Comunicados',
+          title: 'Comunicados',
+          drawerIcon: ({ color }) => <Icon name="alerts" color={color} />,
         }}
       />
       <Drawer.Screen

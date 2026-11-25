@@ -62,7 +62,12 @@ export default function WelcomeScreen() {
       )}
       <Actions>
         <Button tone="inverse" label="Criar conta" onPress={() => router.push('/sign-up')} />
-        <Button tone="inverse" variant="outlined" label="Já tenho conta" onPress={() => router.push('/sign-in')} />
+        <Button
+          tone="inverse"
+          variant="outlined"
+          label="Já tenho conta"
+          onPress={() => router.push('/sign-in')}
+        />
       </Actions>
     </Container>
   )

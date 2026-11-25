@@ -41,6 +41,18 @@ export function formatDateLabel(date: Date): string {
 }
 
 /**
+ * Mostra uma coluna DATE que a API serializa como meia-noite UTC ("2026-10-12T00:00:00.000Z").
+ * Usa só o "AAAA-MM-DD", porque `new Date()` nesse texto cai no dia anterior em UTC−3. Mesmo
+ * helper do painel web.
+ *
+ * @example
+ * formatDatabaseDate('2026-10-12T00:00:00.000Z') // "12/10/2026"
+ */
+export function formatDatabaseDate(dateTime: string): string {
+  return formatDateLabel(parseIsoDate(dateTime.slice(0, 10)))
+}
+
+/**
  * Prefixo "AAAA-MM" de uma data local, para casar com as datas "AAAA-MM-DD" da API.
  *
  * @example

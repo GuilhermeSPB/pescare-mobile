@@ -52,6 +52,8 @@ const space = {
 const radius = {
   field: 4,
   card: 12,
+  // Ponta arredondada da barra de gráfico; a base fica reta, presa na linha de zero.
+  bar: 4,
   full: 999,
 }
 
@@ -60,6 +62,10 @@ const size = {
   control: 56,
   iconButton: 48,
   appBar: 64,
+  // Gráficos: barra fina, abaixo do teto de 24 que o guia de visualização usa, e sobra ar.
+  barThickness: 16,
+  columnWidth: 20,
+  columnChartHeight: 160,
 }
 
 export const theme = {
